@@ -72,7 +72,6 @@ class PurchaseOrder(models.Model):
     def button_confirm(self):
         self._purchase_request_line_check()
         res = super(PurchaseOrder, self).button_confirm()
-        self._purchase_request_confirm_message()
         return res
 
 

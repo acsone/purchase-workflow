@@ -82,7 +82,6 @@ class ProcurementOrder(models.Model):
                   "for this procurement order (%s).") % self.name)
 
         purchase_request_model = self.env['purchase.request']
-        purchase_request_line_model = self.env['purchase.request.line']
 
         # Search for an existing Purchase Request to be considered
         # to be extended.
@@ -92,10 +91,16 @@ class ProcurementOrder(models.Model):
             req = purchase_request_model.create(request_data)
             self.message_post(body=_("Purchase Request created"))
             self.request_id = req
-        request_line_data = self._prepare_purchase_request_line()
-        purchase_request_line_model.create(request_line_data),
+
         self.message_post(body=_("Purchase Request extended."))
         return self.request_id
+
+    @api.multi
+    def prepare_and_create_purchase_request_line(self):
+        self.ensure_one()
+        request_line_data = self._prepare_purchase_request_line()
+        purchase_request_line_model = self.env['purchase.request.line']
+        return purchase_request_line_model.create(request_line_data)
 
     @api.multi
     def propagate_cancels(self):

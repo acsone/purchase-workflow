@@ -100,7 +100,7 @@ class ProcurementOrder(models.Model):
         self.ensure_one()
         request_line_data = self._prepare_purchase_request_line()
         purchase_request_line_model = self.env['purchase.request.line']
-        purchase_request_line_model.create(request_line_data)
+        return purchase_request_line_model.create(request_line_data)
 
     @api.multi
     def propagate_cancels(self):

@@ -199,6 +199,12 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         return order_line_data
 
     @api.multi
+    def adapt_po_line_procurements(self, po_line, line):
+        self.ensure_one()
+        if line.procurement_id:
+            po_line.procurement_ids = [(4, line.procurement_id.id)]
+
+    @api.multi
     def make_purchase_order(self):
         res = []
         purchase_obj = self.env['purchase.order']
@@ -231,8 +237,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 new_pr_line = False
                 po_line = available_po_lines[0]
                 po_line.purchase_request_lines = [(4, line.id)]
-                if line.procurement_id:
-                    po_line.procurement_ids = [(4, line.procurement_id.id)]
+                self.adapt_po_line_procurements(po_line, line)
             else:
                 po_line_data = self._prepare_purchase_order_line(purchase,
                                                                  item)
